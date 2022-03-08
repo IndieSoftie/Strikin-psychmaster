@@ -9,6 +9,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
+import flixel.FlxCamera;
 
 class GameOverSubstate extends MusicBeatSubstate
 {
@@ -61,21 +62,14 @@ class GameOverSubstate extends MusicBeatSubstate
 		camFollowPos.setPosition(FlxG.camera.scroll.x + (FlxG.camera.width / 2), FlxG.camera.scroll.y + (FlxG.camera.height / 2));
 		add(camFollowPos);
 
-		new FlxTimer().start(2, function(tmr:FlxTimer)
-		{
-		FlxG.sound.music.fadeOut(1, 0.3);
-
-			new FlxTimer().start(0.7, function(tmr:FlxTimer)
-			{
-				FlxG.sound.play(Paths.soundRandom('fns/morgana/taunt/morgana', 1, 8), 1, false, null, true, function()
-				{
-					new FlxTimer().start(0.2, function(tmr:FlxTimer)
-						{
-							FlxG.sound.music.fadeIn(1, 0.3, 1);
-						});	
-				});
-			});
-		});
+		#if mobileC
+		addVirtualPad(NONE, A_B);
+		
+		var camcontrol = new FlxCamera();
+		FlxG.cameras.add(camcontrol);
+		camcontrol.bgColor.alpha = 0;
+		_virtualpad.cameras = [camcontrol];
+		#end
 	}
 
 	override function update(elapsed:Float)
@@ -104,7 +98,7 @@ class GameOverSubstate extends MusicBeatSubstate
 			else
 				MusicBeatState.switchState(new FreeplayState());
 
-			FlxG.sound.playMusic(Paths.music('POOP_LOOP'));
+			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			lePlayState.callOnLuas('onGameOverConfirm', [false]);
 		}
 
